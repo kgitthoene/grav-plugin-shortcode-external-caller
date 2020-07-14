@@ -56,7 +56,7 @@ The configuration is a [YAML](https://yaml.org/) file. You must enclose this in 
 | Parameter  | Description                                                  |
 | ---------- | ------------------------------------------------------------ |
 | `provider` | Provider of the displayed map.<br />Possible values: `leaflet` |
-| `geo`      | Location of the center of the map.<br />Scheme: `LATITUDE,LONGITUDE[?z=ZOOM-FACTOR]`<br />`LATITUDE` and `LOGITUDE` are floating point values.<br />The zoom factor is optional. It defaults to 16. |
+| `geo`      | Location of the center of the map.<br />Scheme: `LATITUDE,LONGITUDE[?z=ZOOM-FACTOR]`<br />`LATITUDE` and `LOGITUDE` are floating point values. The zoom factor is optional. It defaults to 16. |
 | `width`    | Width of map in pixel.                                       |
 | `height`   | Height of map in pixel.                                      |
 | `poi`      | Array of hashes (associative array) of POI (point of interest). |
@@ -66,27 +66,56 @@ The configuration is a [YAML](https://yaml.org/) file. You must enclose this in 
 | Parameter     | Description                                                  |
 | ------------- | ------------------------------------------------------------ |
 | `description` | Literally description of POI.<br />Value: String.<br />The description is processed as markdown. Feel free to add links, formatting and so on. |
-| `geo`         | Location of the center of the map.<br />Scheme: `LATITUDE,LONGITUDE`<br />`LATITUDE` and `LOGITUDE` are floating point values.<br />No zoom factor here. 😱 |
-| `anchor`      | Name of an page anchor.<br />Value: String.<br />Syntax restrictions see [here](https://www.w3schools.com/hTML/html_id.asp). „The name is case sensitive. The name must contain at least one   character, and must not contain whitespaces (spaces, tabs,   etc.).“<br />On other Grav pages you may refer these POI.<br />Say the name is `loc_town_hall` on page `map`.<br />On any other or the same page you may link it with:<br /> `[Town Hall](map#loc_town_hall)` |
-| `color`       | HTML/CSS color of the map marker.<br />Syntax restrictions see [here](https://www.w3schools.com/CSSref/pr_text_color.asp). |
+| `geo`         | Location of the POI.<br />Scheme: `LATITUDE,LONGITUDE`<br />`LATITUDE` and `LOGITUDE` are floating point values. No zoom factor here. 😱 So, the marker may not be visible. |
+| `anchor`      | Name of an page anchor.<br />Value: String.<br />Syntax restrictions see [here](https://www.w3schools.com/hTML/html_id.asp). „The name is case sensitive. The name must contain at least one   character, and must not contain whitespaces (spaces, tabs,   etc.).“<br />On other Grav pages you may refer these POI. Say the name is `loc_town_hall` on page `map`. On any other or the same page you may link it with:  `[Town Hall](map#loc_town_hall)` |
+| `color`       | HTML/CSS color of the map marker. Syntax restrictions see [here](https://www.w3schools.com/CSSref/pr_text_color.asp). |
 | `badge`       | Text for the center of the marker. Should be very short! One, two or three characters. |
 
 ## Examples
 
 
-```
+```md
 [external-caller="ruby self://bin/create-embedded-map.rb"]
 ​```
 ---
 provider: leaflet
-geo: 38.89768,-77.03656?z=16
+geo: 38.89768,-77.03656?z=13
 width: 700
 height: 400
 poi:
   -
-    description: '[The White House](https://en.wikipedia.org/wiki/White_House)'
+    description: '[The White House](https://en.wikipedia.org/wiki/White_House), Washington, D.C.'
     geo: 38.89768,-77.03656
     anchor: 'loc_white_house'
+    color: red
+    badge: A
+  -
+    description: 'Restaurant [Oyamel Cocina Mexicana](https://www.oyamel.com/)'
+    geo: 38.89494,-77.02167
+  -
+    description: 'Restaurant [BLT Steak](https://bltrestaurants.com/blt-steak/washington-d-c/)'
+    geo: 38.90172,-77.03760
+  -
+    description: 'Restaurant [Taylor Gourmet](http://taylorgourmet.com/)'
+    geo: 38.90585,-77.04371
+  -
+    description: 'Restaurant [Minibar](http://www.minibarbyjoseandres.com/minibar/)'
+    geo: 38.89632,-77.02358
+  -
+    description: 'Restaurant [Good Stuff Eatery](http://goodstuffeatery.com/locations/capitol-hill)'
+    geo: 38.88660,-77.00179
+  -
+    description: 'Restaurant [Rose’s Luxury](https://www.rosesrestaurantgroupdc.com/)'
+    geo: 38.88064,-76.99528
+  -
+    description: 'Restaurant [Blue Duck Tavern](https://www.blueducktavern.com/?src=vanity_blueducktavern.com)'
+    geo: 38.90553,-77.05116
+  -
+    description: 'Restaurant [Ray’s Hell Burger](http://www.rayshellburger.com/)'
+    geo: 38.90282,-77.01777
+  -
+    description: 'Restaurant [Restaurant Nora](http://www.noras.com/)'
+    geo: 38.91275,-77.04727
 ...
 ​```
 [/external-caller]
