@@ -29,21 +29,16 @@ See also [here](https://github.com/vmg/redcarpet#you-can-totally-install-it-as-a
 ```
 ---
 provider: leaflet
-geo: 52.05551,8.36240?z=16
+geo: 38.89768,-77.03656?z=13
 width: 700
 height: 400
 poi:
   -
-    description: Stadtpark
-    geo: 52.05551,8.36240
-    anchor: 'loc_stadtpark'
-  -
-    description: Spielplatz
-    geo: 52.05592,8.36007
-  -
-    description: 'Eingang zum Stadtpark [Home](/)'
-    geo: 52.05595,8.36562
-    anchor: 'loc_stadtpark_eingang'
+    description: 'The White House'
+    geo: 38.89768,-77.03656
+    anchor: 'loc_white_house'
+    color: red
+    badge: A
 ...
 ```
 [/external-caller]
@@ -72,7 +67,6 @@ The configuration is a [YAML](https://yaml.org/) file. You must enclose this in 
 | `badge`       | Text for the center of the marker. Should be very short! One, two or three characters. |
 
 ## Examples
-
 
 ```md
 [external-caller="ruby self://bin/create-embedded-map.rb"]
