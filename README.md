@@ -239,3 +239,5 @@ Arguments: None.
 Stdin: YAML file with map definitions.
 
 Output: JSON. The JSON output is processed by this plugin. And HTML is placed to the page. This indirection and its use is described [above](#return-json).
+
+For a complete documentation of this program see: [create-embedded-map.md](bin/create-embedded-map.md)

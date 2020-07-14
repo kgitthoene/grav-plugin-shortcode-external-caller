@@ -7,10 +7,14 @@ icon: code
 author:
   name: Kai Thöne
   email: k.git.thoene@gmx.net
-  url: https://github.com/kgitthoene/grav-plugin-shortcode-external-caller
+  url: https://github.com/kgitthoene
 keywords: grav, plugin, twig
+homepage: https://github.com/kgitthoene/grav-plugin-shortcode-external-caller
 bugs: https://github.com/kgitthoene/grav-plugin-shortcode-external-caller/issues
 license: BSD
+
+dependencies:
+    - { name: grav, version: '>=1.6.4' }
 
 form:
   validation: strict

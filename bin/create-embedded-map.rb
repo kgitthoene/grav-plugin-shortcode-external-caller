@@ -90,38 +90,56 @@ begin
   #----------
   # Render markers.
   #
+  initial_description_marker_font_size = 14
+  initial_map_marker_font_size = 17
+  initial_map_marker_bottom_position = -5
   marker = ''  # <= These become the markers.
   a_poi_table = []
   marker_pre = ''
+  n_index = 1
   n_marker = 1
+  n_color = 0
   data['poi'].each do |poi|
     if poi['geo']
       lat, lon, _zoom = get_lat_long_zoom(poi['geo'])
       moptions = ''
       msubopt = ''
       msubopt += "title: '#{poi['name']}', " if poi['name']
-      m_color = 'red'
+      m_color = (poi['color'].to_s.empty? ? COLORS[n_color % COLORS.length] : poi['color'])
+      badge = (poi['badge'].to_s.empty? ? n_marker.to_s : poi['badge'].to_s)
+      # Get length of number.
+      n_len = badge.length
+      m_fsize = (initial_map_marker_font_size * (1.0 - 0.18 * (n_len - 1))).floor
+      m_fsize = 6 if m_fsize < 6
+      m_bottom_pos = initial_map_marker_bottom_position + ((initial_map_marker_font_size - m_fsize) / 2).ceil
+      m_bottom_pos += 2 if (m_bottom_pos - initial_map_marker_bottom_position) >= 2
       m_pre =<<EOF
-      var icon_#{n_marker}_#{maphex} = L.divIcon({
+      var icon_#{n_index}_#{maphex} = L.divIcon({
 				className: 'custom-div-icon', iconSize: [30, 42], iconAnchor: [15, 42],
-        html: '<div style="background-color:#{COLORS[n_marker % COLORS.length]};" class="marker-pin"></div><span class="marker-number">#{n_marker}</span>',
+        html: '<div style="background-color:#{m_color};" class="marker-pin"></div><span class="marker-number" style="font-size:#{m_fsize}px; bottom:#{m_bottom_pos}px;">#{badge}</span>',
       });
 EOF
       marker_pre += (marker_pre.empty? ? "\n" : '') + m_pre
-      msubopt += "icon: icon_#{n_marker}_#{maphex}, "
+      msubopt += "icon: icon_#{n_index}_#{maphex}, "
       moptions = "{ #{msubopt}}" if !msubopt.empty?
       marker += (marker.empty? ? '' : "\n") + "      L.marker([#{lat}, #{lon}]#{moptions.empty? ? '' : ", #{moptions}"}).addTo(#{mapvar});"
-      #
+      # Get length of number.
+      n_len = badge.length
+      m_fsize = (initial_description_marker_font_size * (1.0 - 0.12 * n_len)).floor
+      m_fsize = 6 if m_fsize < 6
+      # Push POI for table.
       a_poi_table.push([
         # Replica of marker, with optional anchor.
-        "<span #{poi['anchor'].to_s.empty? ? '' : "id=\"#{poi['anchor']}\" "}class=\"marker-icon-a\"><div style=\"background-color:#{COLORS[n_marker % COLORS.length]};\" class=\"marker-pin-a\"><div class=\"number\">#{n_marker}</div></div></span>",
+        "<span #{poi['anchor'].to_s.empty? ? '' : "id=\"#{poi['anchor']}\" "}class=\"marker-icon-a\"><div style=\"background-color:#{m_color};\" class=\"marker-pin-a\"><div class=\"number\" style=\"font-size:#{m_fsize}px;\">#{badge}</div></div></span>",
         # Rendered description.
         (poi['description'].to_s.empty? ? '' : markdown_renderer.render(poi['description'])),
         # Geo-location link.
-        "<a href=\"geo:#{lat},#{lon}\">geo:#{lat},#{lon}</a>",
+        "<p><a href=\"geo:#{lat},#{lon}\">geo:#{lat},#{lon}</a></p>",
       ])
       #
-      n_marker += 1
+      n_color += 1 if poi['color'].to_s.empty?
+      n_marker += 1 if poi['badge'].to_s.empty?
+      n_index += 1
     end
   end
   #
@@ -170,7 +188,7 @@ EOF
         right: 0;
         margin: 10px auto;
         text-align: center;
-        top: -2px;
+        bottom: -5px;
       }
       .custom-div-icon span.marker-number {
         margin: 12px auto;
@@ -207,7 +225,7 @@ EOF
         transform: rotate(45deg);
         /*background-color: red;*/
         width: 24px;
-        font-size: 14px;
+        font-size: #{initial_description_marker_font_size}px;
         top: -1px;
         left: -1px;
         margin: 0;
@@ -237,7 +255,6 @@ EOF
           <th>Marker</th>
           <th>Description</th>
           <th>Location</th>
-          <th>Extra</th>
         </tr>
       </thead>
       <tbody>
@@ -248,9 +265,6 @@ EOF
           <td style="text-align:center;">#{poi_tr[0]}</td>
           <td>#{poi_tr[1]}</td>
           <td>#{poi_tr[2]}</td>
-          <td style="text-align:left;">
-            <span class="color-box" style="background-color:#{COLORS[n_marker % COLORS.length]};"></span>
-          </td>
         </tr>
 EOF
     n_marker += 1
@@ -270,7 +284,7 @@ EOF
   puts JSON.generate({
     html: html_output,
     css: %W(https://unpkg.com/leaflet@1.6.0/dist/leaflet.css),
-    js: %W(https://unpkg.com/leaflet@1.6.0/dist/leaflet.js self://js/hello-world.js),
+    js: %W(https://unpkg.com/leaflet@1.6.0/dist/leaflet.js),
   })
   #
 end
