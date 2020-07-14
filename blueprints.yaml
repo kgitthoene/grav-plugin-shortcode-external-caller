@@ -1,0 +1,23 @@
+name: Shortcode External Caller
+version: 0.1.0
+description: "Use the Shortcode Core Plugin to provide the [external-caller] shortcode."
+icon:  language
+author:
+  name: Kai Thöne
+  email: kai.thoene@gmx.net
+  url: 
+license: BSD
+
+form:
+  validation: strict
+  fields:
+    enabled:
+      type: toggle
+      label: Plugin status
+      highlight: 1
+      default: 0
+      options:
+        1: Enabled
+        0: Disabled
+      validate:
+        type: bool
