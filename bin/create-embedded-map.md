@@ -16,11 +16,15 @@ Output: JSON. The JSON output is processed by this plugin. And HTML is placed to
 
 ## Install prerequisites
 
+Ruby, of course. See [here](https://www.ruby-lang.org/en/documentation/installation/).
+
+And the gem redcarpet.
+
 ```
 $ [sudo] gem install redcarpet
 ```
 
-See also [here](https://github.com/vmg/redcarpet#you-can-totally-install-it-as-a-gem).
+See [here](https://github.com/vmg/redcarpet#you-can-totally-install-it-as-a-gem).
 
 ## Scheme to call this program
 
@@ -50,23 +54,23 @@ The configuration is a [YAML](https://yaml.org/) file. You must enclose this in 
 
 | Parameter  | Description                                                  |
 | ---------- | ------------------------------------------------------------ |
-| `provider` | Provider of the displayed map.<br />Possible values: `leaflet` |
+| `provider` | (Optional) Provider of the displayed map.<br />Possible values: `leaflet`<br />A map without map provider defaults to `leaflet`. |
 | `geo`      | Location of the center of the map.<br />Scheme: `LATITUDE,LONGITUDE[?z=ZOOM-FACTOR]`<br />`LATITUDE` and `LOGITUDE` are floating point values. The zoom factor is optional. It defaults to 16. |
 | `width`    | Width of map in pixel.                                       |
 | `height`   | Height of map in pixel.                                      |
-| `poi`      | Array of hashes (associative array) of POI (point of interest). |
+| `poi`      | (Optional) Array of hashes (associative array) of POI (point of interest). |
 
 #### POI
 
 | Parameter     | Description                                                  |
 | ------------- | ------------------------------------------------------------ |
-| `description` | Literally description of POI.<br />Value: String.<br />The description is processed as markdown. Feel free to add links, formatting and so on. |
-| `geo`         | Location of the POI.<br />Scheme: `LATITUDE,LONGITUDE`<br />`LATITUDE` and `LOGITUDE` are floating point values. No zoom factor here. 😱 So, the marker may not be visible. |
-| `anchor`      | Name of an page anchor.<br />Value: String.<br />Syntax restrictions see [here](https://www.w3schools.com/hTML/html_id.asp). „The name is case sensitive. The name must contain at least one   character, and must not contain whitespaces (spaces, tabs,   etc.).“<br />On other Grav pages you may refer these POI. Say the name is `loc_town_hall` on page `map`. On any other or the same page you may link it with:  `[Town Hall](map#loc_town_hall)` |
-| `color`       | HTML/CSS color of the map marker. Syntax restrictions see [here](https://www.w3schools.com/CSSref/pr_text_color.asp). |
-| `badge`       | Text for the center of the marker. Should be very short! One, two or three characters. |
+| `description` | (Optional) Literally description of POI.<br />Value: String.<br />The description is processed as markdown. Feel free to add links, formatting and so on. |
+| `geo`         | Location of the POI.<br />Scheme: `LATITUDE,LONGITUDE`<br />`LATITUDE` and `LOGITUDE` are floating point values. No zoom factor here. 😱 So, the marker may not be visible on the map. |
+| `anchor`      | (Optional) Name of an page anchor.<br />Value: String.<br />Syntax restrictions see [here](https://www.w3schools.com/hTML/html_id.asp). „The name is case sensitive. The name must contain at least one   character, and must not contain whitespaces (spaces, tabs,   etc.).“<br />On other Grav pages you may refer these POI. Say the anchor is `loc_town_hall` on page `map`. You may link it with:  `[Town Hall](map#loc_town_hall)` |
+| `color`       | (Optional) HTML/CSS color of the map marker. Syntax restrictions see [here](https://www.w3schools.com/CSSref/pr_text_color.asp). POI without specific color default to an internal color scheme. |
+| `badge`       | (Optional) Text for the center of the marker. Should be very short! One, two or three characters. POI without badge are numbered up beginning with 1. |
 
-## Examples
+## Example
 
 ```md
 [external-caller="ruby self://bin/create-embedded-map.rb"]

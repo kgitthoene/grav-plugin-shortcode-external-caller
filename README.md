@@ -75,9 +75,9 @@ Example: `"js": [ "https://code.jquery.com/jquery-3.5.1.min.js" ]`
 
 **To access local CSS or JS files in the context of Grav, say routes, use special protocol specifiers. Discussed in the next chapter.**
 
-## Routes for CSS and JS files
+### Routes for CSS and JS files
 
-If the URL starts with `self://`,`plugin://`, `page://` or `grav://` this is substituted.
+This chapter is only important, if you return JSON. If the URL starts with `self://`,`plugin://`, `page://` or `grav://` this is substituted.
 
 | PHP Regular Expression Pattern | Replacement                                                  | Example                                   |
 | ------------------------------ | ------------------------------------------------------------ | ----------------------------------------- |
@@ -128,7 +128,7 @@ will refer to this route:
 /css/sample.css
 ```
 
-**Warning!** Do not misunderstand these helper routes with the normal Grav routes. If you enter such a helper route to a markdown page in the browser, you'll go outside the regular Grav routes and neither get any page.
+**Warning!** Do not misunderstand these helper routes for CSS and JS files with the normal Grav routes. If you enter such a helper route to a markdown page in the browser, you'll go outside the regular Grav routes and neither get any page.
 
 ## File paths
 
@@ -149,19 +149,19 @@ The program path and **all** arguments are processed with following replacements
 | `"~^page://~"`                 | Directory of the current page. (See: [PAGE_PATH](#PAGE_PATH)) |
 | `"~^grav://~"`                 | Root directory of Grav instance. (See: [ROOT_PATH](ROOT_PATH)) |
 
-So, you may create a `external-bin` directory in the root directory of your Grav instance and place programs (e.g. shell scripts, etc.) there.
+So, you may create a `external-bin` directory in the root directory of your Grav instance and place programs (shell scripts, etc.) there.
 
 Example: `[external-caller="/bin/sh grav://external-bin/script.sh"]`
 
-Alternatively you may use the existing `bin` directory from this plugin. Which can be found here. `$ROOT_PATH` is the instance directory of your Grav installation.
+Alternatively you may use the existing `bin` directory from this plugin. Which can be found here. (`$ROOT_PATH` is the instance directory of your Grav installation.)
 
-```
+```md
 $ROOT_PATH/user/plugins/shortcode-external-caller/bin
 ```
 
 Refer a sample script by:
 
-```
+```md
 [external-caller="/bin/sh self://bin/inspect.sh"]
 ```
 
