@@ -1,3 +1,10 @@
+# v0.1.2
+## 16/07/2020
+
+1. [](#improvement)
+    * Check given YAML in bin/create-embedded-map.rb
+
+
 # v0.1.1
 ## 14/07/2020
 

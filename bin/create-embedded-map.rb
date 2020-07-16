@@ -20,32 +20,32 @@ require 'redcarpet'
 # Colors.
 #
 COLORS = [
-"#008395",
-"#00007B",
-"#95D34F",
-"#F69EDB",
-"#D311FF",
-"#7B1A69",
-"#F61160",
-"#FFC183",
-"#232308",
-"#8CA77B",
-"#F68308",
-"#837200",
-"#72F6FF",
-"#9EC1FF",
-"#72607B",
-"#0000FF",
-"#FF0000",
-"#00FF00",
-"#00002B",
-"#FF1AB8",
-"#FFD300",
-"#005700",
-"#8383FF",
-"#9E4F46",
-"#00FFC1",
-]
+  '#008395',
+  '#00007B',
+  '#95D34F',
+  '#F69EDB',
+  '#D311FF',
+  '#7B1A69',
+  '#F61160',
+  '#FFC183',
+  '#232308',
+  '#8CA77B',
+  '#F68308',
+  '#837200',
+  '#72F6FF',
+  '#9EC1FF',
+  '#72607B',
+  '#0000FF',
+  '#FF0000',
+  '#00FF00',
+  '#00002B',
+  '#FF1AB8',
+  '#FFD300',
+  '#005700',
+  '#8383FF',
+  '#9E4F46',
+  '#00FFC1',
+].freeze
 #
 #----------
 # Functions.
@@ -58,16 +58,25 @@ def get_lat_long_zoom(data_p, default_zoom_p = 16)
     long = a_da[1].to_f
     zoom = default_zoom_p
     if a_da[2] =~ /^z=(\d+)/
-      zoom = $1.to_i
+      zoom = Regexp.last_match(1).to_i
       zoom = default_zoom_p if zoom < 0
     end
     return lat, long, zoom
   end
   raise "#{File.join($g_absmydir, $g_myanme)}: Invalid geo entry! GEO='#{data_p}'"
-end  #get_lat_long_zoom
+end #get_lat_long_zoom
+
 #
 #----------
 # START HERE.
+#
+def check_parameter(hash_p, key_p, lambda_p)
+  value = hash_p[key_p.to_s]
+  emsg, hash_p[key_p.to_s] = lambda_p.call(key_p.to_s, hash_p[key_p.to_s])
+  emsg = "Not String. Invalid map #{key_p}! #{key_p.to_s.upcase}=#{value.inspect}" unless hash_p[key_p.to_s].is_a?(String)
+  emsg.to_s
+end # check_parameter
+#
 #
 begin
   markdown_renderer = Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: true, tables: true)
@@ -75,9 +84,96 @@ begin
   $stdin.each_line { |line| input += line }
   data = YAML.load(input)
   #
-  #----------
-  # TODO: Syntax checking of data.
+  #----------debug
+  # Syntax checking of data.
   #
+  emsg = ''
+  loop do
+    emsg = "Not Hash. Invalid YAML data! DATA=#{data.inspect}" unless data.is_a?(Hash)
+    break unless emsg.empty?
+    # Trim all values.
+    data.each_key { |key| data[key] = data[key].strip if data[key].is_a?(String) }
+    # provider
+    emsg += check_parameter(data, :provider, lambda { |name, value|
+      value = 'leaflet' if value.to_s.empty?
+      emsg = "Invalid map #{name}! #{name.upcase}=#{value.inspect}" if value != 'leaflet'
+      [emsg, value]
+    })
+    break unless emsg.empty?
+    # geo
+    emsg += check_parameter(data, :geo, lambda { |name, value|
+      value = '' if value.to_s.empty?
+      emsg = "Invalid map #{name}! #{name.upcase}=#{value.inspect}" unless value =~ /^[+-]?\d+(\.\d+)?,[+-]?\d+(\.\d+)?\?z=\d+$/
+      [emsg, value]
+    })
+    break unless emsg.empty?
+    # width
+    emsg += check_parameter(data, :width, lambda { |name, value|
+      value = '' if value.to_s.empty?
+      if value.to_s =~ /^\d+$/
+        emsg = "Invalid map #{name}! Must be greater then zero! #{name.upcase}=#{value.inspect}" if value.to_s.to_i.zero?
+      else
+        emsg = "Invalid map #{name}! #{name.upcase}=#{value.inspect}"
+      end
+      [emsg, value.to_s]
+    })
+    break unless emsg.empty?
+    # height
+    emsg += check_parameter(data, :height, lambda { |name, value|
+      value = '' if value.to_s.empty?
+      if value.to_s =~ /^\d+$/
+        emsg = "Invalid map #{name}! Must be greater then zero! #{name.upcase}=#{value.inspect}" if value.to_s.to_i.zero?
+      else
+        emsg = "Invalid map #{name}! #{name.upcase}=#{value.inspect}"
+      end
+      [emsg, value.to_s]
+    })
+    break unless emsg.empty?
+    unless data['poi'].nil?
+      poi = data['poi']
+      if poi.is_a?(Array)
+        poi.each do |single_poi|
+          if single_poi.is_a?(Hash)
+            # Check if String.
+            single_poi.each_key do |key|
+              emsg += "POI #{key} is not a String! POI-#{key.to_s.upcase}=#{single_poi[key].inspect}" unless single_poi[key].is_a?(String)
+              break unless emsg.empty?
+            end
+            unless emsg.empty?
+              # Trim all.
+              single_poi.each_key { |key| single_poi[key] = single_poi[key].strip }
+              # geo
+              emsg += check_parameter(single_poi, :geo, lambda { |name, value|
+                value = '' if value.to_s.empty?
+                emsg = "Invalid POI #{name}! #{name.upcase}=#{value.inspect}" unless value =~ /^[+-]?\d+(\.\d+)?,[+-]?\d+(\.\d+)?$/
+                [emsg, value]
+              })
+              break unless emsg.empty?
+              # anchor
+              emsg += check_parameter(single_poi, :anchor, lambda { |name, value|
+                value = '' if value.to_s.empty?
+                emsg = "Invalid POI #{name}! #{name.upcase}=#{value.inspect}" if value =~ /\s/
+                [emsg, value]
+              })
+              break unless emsg.empty?
+            end
+          else
+            emsg = "Invalid map POI! Not Hash. POI=#{single_poi.inspect}"
+            break unless emsg.empty?
+          end
+        end
+        break unless emsg.empty?
+      else
+        emsg += "Invalid map POI! Not Array. POI=#{poi.inspect}"
+        break unless emsg.empty?
+      end
+    end
+    break
+  end
+  unless emsg.empty?
+    warn emsg
+    exit 1
+  end
   #
   #----------
   # Map variable names.
@@ -93,54 +189,53 @@ begin
   initial_description_marker_font_size = 14
   initial_map_marker_font_size = 17
   initial_map_marker_bottom_position = -5
-  marker = ''  # <= These become the markers.
+  marker = '' # <= These become the markers.
   a_poi_table = []
   marker_pre = ''
   n_index = 1
   n_marker = 1
   n_color = 0
   data['poi'].each do |poi|
-    if poi['geo']
-      lat, lon, _zoom = get_lat_long_zoom(poi['geo'])
-      moptions = ''
-      msubopt = ''
-      msubopt += "title: '#{poi['name']}', " if poi['name']
-      m_color = (poi['color'].to_s.empty? ? COLORS[n_color % COLORS.length] : poi['color'])
-      badge = (poi['badge'].to_s.empty? ? n_marker.to_s : poi['badge'].to_s)
-      # Get length of number.
-      n_len = badge.length
-      m_fsize = (initial_map_marker_font_size * (1.0 - 0.18 * (n_len - 1))).floor
-      m_fsize = 6 if m_fsize < 6
-      m_bottom_pos = initial_map_marker_bottom_position + ((initial_map_marker_font_size - m_fsize) / 2).ceil
-      m_bottom_pos += 2 if (m_bottom_pos - initial_map_marker_bottom_position) >= 2
-      m_pre =<<EOF
+    next unless poi['geo']
+    lat, lon, _zoom = get_lat_long_zoom(poi['geo'])
+    moptions = ''
+    msubopt = ''
+    msubopt += "title: '#{poi['name']}', " if poi['name']
+    m_color = (poi['color'].to_s.empty? ? COLORS[n_color % COLORS.length] : poi['color'])
+    badge = (poi['badge'].to_s.empty? ? n_marker.to_s : poi['badge'].to_s)
+    # Get length of number.
+    n_len = badge.length
+    m_fsize = (initial_map_marker_font_size * (1.0 - 0.18 * (n_len - 1))).floor
+    m_fsize = 6 if m_fsize < 6
+    m_bottom_pos = initial_map_marker_bottom_position + ((initial_map_marker_font_size - m_fsize) / 2).ceil
+    m_bottom_pos += 2 if (m_bottom_pos - initial_map_marker_bottom_position) >= 2
+    m_pre = <<EOF
       var icon_#{n_index}_#{maphex} = L.divIcon({
 				className: 'custom-div-icon', iconSize: [30, 42], iconAnchor: [15, 42],
         html: '<div style="background-color:#{m_color};" class="marker-pin"></div><span class="marker-number" style="font-size:#{m_fsize}px; bottom:#{m_bottom_pos}px;">#{badge}</span>',
       });
 EOF
-      marker_pre += (marker_pre.empty? ? "\n" : '') + m_pre
-      msubopt += "icon: icon_#{n_index}_#{maphex}, "
-      moptions = "{ #{msubopt}}" if !msubopt.empty?
-      marker += (marker.empty? ? '' : "\n") + "      L.marker([#{lat}, #{lon}]#{moptions.empty? ? '' : ", #{moptions}"}).addTo(#{mapvar});"
-      # Get length of number.
-      n_len = badge.length
-      m_fsize = (initial_description_marker_font_size * (1.0 - 0.12 * n_len)).floor
-      m_fsize = 6 if m_fsize < 6
-      # Push POI for table.
-      a_poi_table.push([
-        # Replica of marker, with optional anchor.
-        "<span #{poi['anchor'].to_s.empty? ? '' : "id=\"#{poi['anchor']}\" "}class=\"marker-icon-a\"><div style=\"background-color:#{m_color};\" class=\"marker-pin-a\"><div class=\"number\" style=\"font-size:#{m_fsize}px;\">#{badge}</div></div></span>",
-        # Rendered description.
-        (poi['description'].to_s.empty? ? '' : markdown_renderer.render(poi['description'])),
-        # Geo-location link.
-        "<p><a href=\"geo:#{lat},#{lon}\">geo:#{lat},#{lon}</a></p>",
-      ])
-      #
-      n_color += 1 if poi['color'].to_s.empty?
-      n_marker += 1 if poi['badge'].to_s.empty?
-      n_index += 1
-    end
+    marker_pre += (marker_pre.empty? ? "\n" : '') + m_pre
+    msubopt += "icon: icon_#{n_index}_#{maphex}, "
+    moptions = "{ #{msubopt}}" unless msubopt.empty?
+    marker += (marker.empty? ? '' : "\n") + "      L.marker([#{lat}, #{lon}]#{moptions.empty? ? '' : ", #{moptions}"}).addTo(#{mapvar});"
+    # Get length of number.
+    n_len = badge.length
+    m_fsize = (initial_description_marker_font_size * (1.0 - 0.12 * n_len)).floor
+    m_fsize = 6 if m_fsize < 6
+    # Push POI for table.
+    a_poi_table.push([
+                       # Replica of marker, with optional anchor.
+                       "<span #{poi['anchor'].to_s.empty? ? '' : "id=\"#{poi['anchor']}\" "}class=\"marker-icon-a\"><div style=\"background-color:#{m_color};\" class=\"marker-pin-a\"><div class=\"number\" style=\"font-size:#{m_fsize}px;\">#{badge}</div></div></span>",
+                       # Rendered description.
+                       (poi['description'].to_s.empty? ? '' : markdown_renderer.render(poi['description'])),
+                       # Geo-location link.
+                       "<p><a href=\"geo:#{lat},#{lon}\">geo:#{lat},#{lon}</a></p>",
+                     ])
+    #
+    n_color += 1 if poi['color'].to_s.empty?
+    n_marker += 1 if poi['badge'].to_s.empty?
+    n_index += 1
   end
   #
   #----------
@@ -269,23 +364,23 @@ EOF
 EOF
     n_marker += 1
   end
-  poi_table_content +="      </tbody></table>\n" if !poi_table_content.empty?
+  poi_table_content += "      </tbody></table>\n" unless poi_table_content.empty?
   #
   #----------
   # Output redered content.
   #
   html_output = ''
-  html_output += map_content if !map_content.empty?
-  html_output += poi_table_content if !poi_table_content.empty?
+  html_output += map_content unless map_content.empty?
+  html_output += poi_table_content unless poi_table_content.empty?
   #
   #----------
   # Return it as JSON.
   #
   puts JSON.generate({
-    html: html_output,
-    css: %W(https://unpkg.com/leaflet@1.6.0/dist/leaflet.css),
-    js: %W(https://unpkg.com/leaflet@1.6.0/dist/leaflet.js),
-  })
+                       html: html_output,
+                       css: %w[https://unpkg.com/leaflet@1.6.0/dist/leaflet.css],
+                       js: %w[https://unpkg.com/leaflet@1.6.0/dist/leaflet.js],
+                     })
   #
 end
 exit 0
