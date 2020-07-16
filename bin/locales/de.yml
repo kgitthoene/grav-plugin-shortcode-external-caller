@@ -1,0 +1,16 @@
+---
+de:
+  # %s needs to be in quotes, otherwise yaml parser will call you names:
+  #Hello: Hallo
+  #"Hello %s, how are you today?": "Hallo %s, wie geht es dir heute?"
+  #"Hello %s, how are you today? How was your %s.": "Hallo %s, wie geht es dir heute? Wie war dein %s."
+  #Hi: Hi
+  #Howdy: Hallöchen
+  #"%s cat": 
+  #  one: "%s Katze"
+  #  other: "%s Katzen"
+  Description: Beschreibung
+  Location: GEO-Link
+  Marker: Marker
+  contributors: Mitwirkende
+...

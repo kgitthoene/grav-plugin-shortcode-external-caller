@@ -56,6 +56,7 @@ The configuration is a [YAML](https://yaml.org/) file. You must enclose this in 
 | ---------- | ------------------------------------------------------------ |
 | `provider` | (Optional) Provider of the displayed map.<br />Possible values: `leaflet`<br />A map without map provider defaults to `leaflet`. |
 | `geo`      | Location of the center of the map.<br />Scheme: `LATITUDE,LONGITUDE[?z=ZOOM-FACTOR]`<br />`LATITUDE` and `LOGITUDE` are floating point values. The zoom factor is optional. It defaults to 16. |
+| `locale`   | (Optional) Locale of map.<br />Possible values: `en`, `de` and all the other locales you define in `bin/locales` directory of the plugin. It defaults to `en`. |
 | `width`    | Width of map in pixel.                                       |
 | `height`   | Height of map in pixel.                                      |
 | `poi`      | (Optional) Array of hashes (associative array) of POI (point of interest). |
@@ -77,6 +78,7 @@ The configuration is a [YAML](https://yaml.org/) file. You must enclose this in 
 ​```
 ---
 provider: leaflet
+locale: en
 geo: 38.89768,-77.03656?z=13
 width: 700
 height: 400

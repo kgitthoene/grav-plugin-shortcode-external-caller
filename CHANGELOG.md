@@ -1,3 +1,10 @@
+# v0.1.4
+## 16/07/2020
+
+1. [](#improvement)
+    * Add failsafe localization in bin/create-embedded-map.rb
+
+
 # v0.1.3
 ## 16/07/2020
 

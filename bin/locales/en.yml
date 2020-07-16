@@ -1,0 +1,7 @@
+---
+# %s needs to be in quotes, otherwise yaml parser will call you names:
+en:
+  Description: Description
+  Location: Location
+  Marker: Marker
+...

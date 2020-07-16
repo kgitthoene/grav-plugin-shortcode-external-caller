@@ -1,5 +1,29 @@
 #!/usr/bin/ruby
 #
+=begin
+Copyright (c) 2020, Kai Thoene
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=end
+#
 #----------
 # Set some global variables.
 #
@@ -70,6 +94,10 @@ end #get_lat_long_zoom
 #----------
 # START HERE.
 #
+#
+#----------
+# TODO: Improve this!
+#
 def check_parameter(hash_p, key_p, lambda_p)
   value = hash_p[key_p.to_s]
   emsg, hash_p[key_p.to_s] = lambda_p.call(key_p.to_s, hash_p[key_p.to_s])
@@ -77,6 +105,18 @@ def check_parameter(hash_p, key_p, lambda_p)
   emsg.to_s
 end # check_parameter
 #
+#----------
+# Load available locales, if any.
+#
+available_locales = [ 'en' ]
+dir_locales = File.join($g_mydir, 'locales')
+Dir.glob(File.join(dir_locales, '*.yml')) do |loc_fn|
+  locale = File.basename(loc_fn, '.*')
+  available_locales.push(locale) unless available_locales.include?(locale)
+end
+#
+#----------
+# Check given YAML file.
 #
 begin
   markdown_renderer = Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: true, tables: true)
@@ -100,10 +140,17 @@ begin
       [emsg, value]
     })
     break unless emsg.empty?
+    # locale
+    emsg += check_parameter(data, :locale, lambda { |name, value|
+      value = 'en' if value.to_s.empty?
+      emsg = "Invalid map #{name}! #{name.upcase}=#{value.inspect}" if !available_locales.include?(value)
+      [emsg, value]
+    })
+    break unless emsg.empty?
     # geo
     emsg += check_parameter(data, :geo, lambda { |name, value|
       value = '' if value.to_s.empty?
-      emsg = "Invalid map #{name}! #{name.upcase}=#{value.inspect}" unless value =~ /^[+-]?\d+(\.\d+)?,[+-]?\d+(\.\d+)?\?z=\d+$/
+      emsg = "Invalid map #{name}! #{name.upcase}=#{value.inspect}" unless value =~ /^[+-]?\d+(\.\d+)?,[+-]?\d+(\.\d+)?(\?z=\d+){0,1}$/
       [emsg, value]
     })
     break unless emsg.empty?
@@ -173,6 +220,27 @@ begin
   unless emsg.empty?
     warn emsg
     exit 1
+  end
+  #
+  #----------
+  # Load translations, if any.
+  #
+  fn_transl = File.join($g_mydir, 'locales')
+  if Dir.exist?(fn_transl)
+    begin
+      require 'fast_gettext'
+      FastGettext.add_text_domain('app', path: fn_transl, type: :yaml)
+      FastGettext.text_domain = 'app'
+      FastGettext.available_locales = available_locales
+      FastGettext.locale = data['locale']
+      include FastGettext::Translation
+    rescue => e
+      require File.join($g_mydir, 'zero-translation.rb')
+      include ZeroGettext::Translation
+    end
+  else
+    require File.join($g_mydir, 'zero-translation.rb')
+    include ZeroGettext::Translation
   end
   #
   #----------
@@ -336,7 +404,7 @@ EOF
     <script type="text/javascript">
       var #{mapvar} = L.map('#{mapid}').setView([#{latitude}, #{longitude}], #{zoom_factor});
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> #{_('contributors')}'
       }).addTo(#{mapvar});#{marker_pre}#{marker}
     </script>
 EOF
@@ -347,9 +415,9 @@ EOF
       poi_table_content = <<EOF
       <table><thead>
         <tr>
-          <th>Marker</th>
-          <th>Description</th>
-          <th>Location</th>
+          <th>#{_('Marker')}</th>
+          <th>#{_('Description')}</th>
+          <th>#{_('Location')}</th>
         </tr>
       </thead>
       <tbody>
