@@ -228,7 +228,7 @@ Output: HTML.
 
 Language: [Ruby](https://www.ruby-lang.org/).
 
-Prerequisite: Gem [redcarpet](https://github.com/vmg/redcarpet)
+Prerequisite: Ruby, gems: [redcarpet](https://github.com/vmg/redcarpet), [fast_gettext](https://github.com/grosser/fast_gettext)
 
 Creates a map with optional markers.
 

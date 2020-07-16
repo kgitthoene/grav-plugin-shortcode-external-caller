@@ -18,13 +18,19 @@ Output: JSON. The JSON output is processed by this plugin. And HTML is placed to
 
 Ruby, of course. See [here](https://www.ruby-lang.org/en/documentation/installation/).
 
-And the gem redcarpet.
+And the gems redcarpet, fast_gettext.
 
-```
+```sh
 $ [sudo] gem install redcarpet
 ```
 
 See [here](https://github.com/vmg/redcarpet#you-can-totally-install-it-as-a-gem).
+
+```sh
+$ [sudo] gem install fast_gettext
+```
+
+See [here](https://github.com/grosser/fast_gettext#setup).
 
 ## Scheme to call this program
 
