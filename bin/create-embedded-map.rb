@@ -235,11 +235,11 @@ begin
       FastGettext.locale = data['locale']
       include FastGettext::Translation
     rescue => e
-      require File.join($g_mydir, 'zero-translation.rb')
+      require File.join($g_mydir, 'lib', 'zero-translation.rb')
       include ZeroGettext::Translation
     end
   else
-    require File.join($g_mydir, 'zero-translation.rb')
+    require File.join($g_mydir, 'lib', 'zero-translation.rb')
     include ZeroGettext::Translation
   end
   #
