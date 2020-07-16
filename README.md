@@ -136,7 +136,7 @@ will refer to this route:
 
 Your decision.
 
-The working directory is the Root directory of your Grav instance. This in mind, you may use all kinds of path (absolute, relative).
+The working directory is the root directory of your Grav instance. This in mind, you may use all kinds of path (absolute, relative).
 
 ### Path and argument substitutions
 

@@ -1,7 +1,7 @@
 name: Shortcode External Caller
 slug: shortcode-external-caller
 type: plugin
-version: 0.1.2
+version: 0.1.3
 description: "Use the Shortcode Core Plugin to provide the [external-caller] shortcode."
 icon: code
 author:
@@ -14,7 +14,8 @@ bugs: https://github.com/kgitthoene/grav-plugin-shortcode-external-caller/issues
 license: BSD
 
 dependencies:
-    - { name: grav, version: '>=1.6.4' }
+  - { name: grav, version: '>=1.6.4' }
+  - { name: shortcode-core, version: '>=4.2.1' }
 
 form:
   validation: strict
