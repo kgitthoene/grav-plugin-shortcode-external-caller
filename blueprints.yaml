@@ -1,7 +1,7 @@
 name: Shortcode External Caller
 slug: shortcode-external-caller
 type: plugin
-version: 0.1.4
+version: 0.1.5
 description: "Use the Shortcode Core Plugin to provide the [external-caller] shortcode."
 icon: code
 author:
@@ -10,6 +10,7 @@ author:
   url: https://github.com/kgitthoene
 keywords: grav, plugin, twig, leaflet, map, external, call
 homepage: https://github.com/kgitthoene/grav-plugin-shortcode-external-caller
+docs: https://github.com/kgitthoene/grav-plugin-shortcode-external-caller/blob/master/README.md
 bugs: https://github.com/kgitthoene/grav-plugin-shortcode-external-caller/issues
 license: BSD
 
