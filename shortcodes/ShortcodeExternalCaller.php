@@ -144,7 +144,14 @@ class ShortcodeExternalCaller extends Shortcode
           'PAGE_URL' => $page->url(),
         );
         $environment = '';
-        $process = proc_open($a_cmd, $descriptorspec, $pipes, NULL, $env);
+        if (PHP_VERSION_ID < 704000) {
+          // Convert command array to string.
+          $s_cmd = self::escapeCommand($a_cmd);
+          $process = proc_open($s_cmd, $descriptorspec, $pipes, NULL, $env);
+        }
+        else {
+          $process = proc_open($a_cmd, $descriptorspec, $pipes, NULL, $env);
+        }
         $error_occured = true;
         $rc = -1;
         if (is_resource($process)) {
