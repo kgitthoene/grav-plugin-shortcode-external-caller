@@ -4,6 +4,9 @@ namespace Grav\Plugin\Shortcodes;
 
 use Thunder\Shortcode\Shortcode\ShortcodeInterface;
 
+#
+#require_once(__DIR__ . DIRECTORY_SEPARATOR . "uLogger.php");
+#
 
 class ShortcodeExternalCaller extends Shortcode
 {
@@ -107,6 +110,7 @@ class ShortcodeExternalCaller extends Shortcode
       $a_cmd = explode(' ', $command);
       $cmd_len = count($a_cmd);
       $no_prg_defined = (empty($cmd_len) or empty($a_cmd[0]));
+      #$logger = new uLogger($page_path);
       if (!$no_prg_defined) {
         $i = 0;
         while ($i < $cmd_len) {
@@ -117,14 +121,18 @@ class ShortcodeExternalCaller extends Shortcode
           $a_cmd[$i] = preg_replace('~^grav://~', $root_path . DIRECTORY_SEPARATOR, $a_cmd[$i]);
           $i++;
         }
-        $stdin_to_command = trim($sc->getContent());
+        $stdin_to_command = strval($sc->getContent());
+        $stdin_to_command = preg_replace('/\x{200b}/um', '', $stdin_to_command);  # Eliminate 'ZERO WIDTH SPACE' (U+200B)
+        $stdin_to_command = trim($stdin_to_command);
         $stdin_before = $stdin_to_command;
-        $stdin_to_command = preg_replace('~^<pre><code>~', '', $stdin_to_command);
-        $stdin_to_command = preg_replace('~</code></pre>$~', '', $stdin_to_command);
+        $stdin_to_command = preg_replace('~^(<pre>){0,1}<code[^>]*>~', '', $stdin_to_command);
+        $stdin_to_command = preg_replace('~</code>(</pre>){0,1}((\r?\n)|(\r\n?))*(</{0,1}p>){0,1}~m', '', $stdin_to_command);
         if ($stdin_to_command == $stdin_before) {
           $stdin_to_command = preg_replace('~^<p>~', '', $stdin_to_command);
           $stdin_to_command = preg_replace('~</p>$~', '', $stdin_to_command);
         }
+        #$logger->log("CMD='" . self::escapeCommand($a_cmd) . "'");
+        #$logger->log($stdin_to_command);
         //
         //----------
         // Exceute command.
@@ -255,4 +263,3 @@ class ShortcodeExternalCaller extends Shortcode
   }  // init
   //
 }  // class ShortcodeExternalCaller
-?>

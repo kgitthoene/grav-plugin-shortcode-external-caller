@@ -2,23 +2,23 @@
 {{ stdout_output }}
 {% else %}
 <pre><code style="color:tomato;">ERROR -- Command execution failed!{{ empty?(error_message) ? '' : ' ' . error_message }}</code>
-<code>COMMAND=</code><code style="background-color:#1A1A1A;">{{ command }}</code>
+<code>COMMAND=</code><code style="background-color:#eeeeee;">{{ command }}</code>
 <code>STDIN</code>
 {% if stdin_to_command != '' %}
-<code style="background-color:#1A1A1A;">{{ stdin_to_command }}</code>
+<code style="background-color:#eeeeee;">{{ stdin_to_command }}</code>
 {% endif %}
 <code>STDOUT</code>
 {% if stdout_output != '' %}
-<code style="background-color:#1A1A1A;">{{ stdout_output }}</code>
+<code style="background-color:#eeeeee;">{{ stdout_output }}</code>
 {% endif %}
 <code>STDERR</code>
 {% if stderr_output != '' %}
-<code style="background-color:#350000;">{{ stderr_output }}</code>
+<code style="background-color:#ffe7e7;">{{ stderr_output }}</code>
 {% endif %}
-<code>RETURN-VALUE=</code><code style="background-color:#350000;">{{ return_code }}</code>
+<code>RETURN-VALUE=</code><code style="background-color:#fbffe5;">{{ return_code }}</code>
 <code>CWD={{ cwd }}</code>
 <code>ENVIRONMENT</code>
 {% if env != '' %}
-<code style="background-color:#1A1A1A;">{{ env }}</code></pre>
+<code style="background-color:#eeeeee;">{{ env }}</code></pre>
 {% endif %}
 {% endif %}
