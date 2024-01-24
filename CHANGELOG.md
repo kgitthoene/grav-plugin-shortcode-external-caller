@@ -1,3 +1,9 @@
+# v0.1.9
+## 24/01/2024
+
+1. [](#improvement)
+    * Removed a minor bug.
+
 # v0.1.8
 ## 22/01/2024
 

@@ -105,6 +105,8 @@ class ShortcodeExternalCaller extends Shortcode
       $root_plugins_path = dirname($plugin_path);
       $stdout_output = '';
       $stderr_output = '';
+      $error_occured = false;
+      $error_message = '';
       $command = trim(strip_tags($sc->getParameter('external-caller', $sc->getBbCode()))) ?: '';
       $command = str_replace('\ ', '@SPACE_HERE@', $command);
       $a_cmd = explode(' ', $command);
@@ -253,7 +255,7 @@ class ShortcodeExternalCaller extends Shortcode
         'stderr_output' => $stderr_output,
         'stdout_output' => $stdout_output,
         'error_occured' => $error_occured,
-        'error_message' => $error_occured,
+        'error_message' => $error_message,
         'env' => $environment,
       ]);
       return $output;
