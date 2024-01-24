@@ -1,5 +1,5 @@
 {% if error_occured == false %}
-{{ stdout_output }}
+{{ stdout_output | raw }}
 {% else %}
 <pre><code style="color:tomato;">ERROR -- Command execution failed!{{ empty?(error_message) ? '' : ' ' . error_message }}</code>
 <code>COMMAND=</code><code style="background-color:#eeeeee;">{{ command }}</code>

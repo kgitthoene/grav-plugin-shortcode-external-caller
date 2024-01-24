@@ -1,7 +1,7 @@
 name: Shortcode External Caller
 slug: shortcode-external-caller
 type: plugin
-version: 0.1.9
+version: 0.2.0
 description: "Use the Shortcode Core Plugin to provide the [external-caller] shortcode."
 icon: code
 author:
